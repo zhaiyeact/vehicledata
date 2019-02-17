@@ -39,18 +39,24 @@ public class VehicleParameterDTO implements Serializable {
     private BigDecimal cost;
 
     /**
-     * 厂修成本列表。每个元素代表一年
+     * 厂修间隔
+     */
+    private BigDecimal factoryRepairInterval;
+
+    /**
+     * 段修间隔
+     */
+    private BigDecimal sectionRepairInterval;
+
+    /**
+     * 厂修成本列表。每个元素代表1次
      */
     private List<BigDecimal> factoryRepairCostList;
 
     /**
-     * 段修成本列表。每个元素代表一年
+     * 段修成本列表。每个元素代表1次
      */
     private List<BigDecimal> sectionRepairCostList;
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
 
     public String getVehicleType() {
         return vehicleType;
@@ -92,6 +98,22 @@ public class VehicleParameterDTO implements Serializable {
         this.cost = cost;
     }
 
+    public BigDecimal getFactoryRepairInterval() {
+        return factoryRepairInterval;
+    }
+
+    public void setFactoryRepairInterval(BigDecimal factoryRepairInterval) {
+        this.factoryRepairInterval = factoryRepairInterval;
+    }
+
+    public BigDecimal getSectionRepairInterval() {
+        return sectionRepairInterval;
+    }
+
+    public void setSectionRepairInterval(BigDecimal sectionRepairInterval) {
+        this.sectionRepairInterval = sectionRepairInterval;
+    }
+
     public List<BigDecimal> getFactoryRepairCostList() {
         return factoryRepairCostList;
     }
@@ -116,6 +138,8 @@ public class VehicleParameterDTO implements Serializable {
         sb.append(", load=").append(load);
         sb.append(", lifeSpan=").append(lifeSpan);
         sb.append(", cost=").append(cost);
+        sb.append(", factoryRepairInterval=").append(factoryRepairInterval);
+        sb.append(", sectionRepairInterval=").append(sectionRepairInterval);
         sb.append(", factoryRepairCostList=").append(factoryRepairCostList);
         sb.append(", sectionRepairCostList=").append(sectionRepairCostList);
         sb.append('}');
