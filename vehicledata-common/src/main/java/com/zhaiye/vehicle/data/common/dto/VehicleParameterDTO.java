@@ -39,9 +39,9 @@ public class VehicleParameterDTO implements Serializable {
     private BigDecimal cost;
 
     /**
-     * 厂修间隔
+     * 厂修年份
      */
-    private BigDecimal factoryRepairInterval;
+    private List<BigDecimal> factoryRepairYears;
 
     /**
      * 段修间隔
@@ -98,12 +98,12 @@ public class VehicleParameterDTO implements Serializable {
         this.cost = cost;
     }
 
-    public BigDecimal getFactoryRepairInterval() {
-        return factoryRepairInterval;
+    public List<BigDecimal> getFactoryRepairYears() {
+        return factoryRepairYears;
     }
 
-    public void setFactoryRepairInterval(BigDecimal factoryRepairInterval) {
-        this.factoryRepairInterval = factoryRepairInterval;
+    public void setFactoryRepairYears(List<BigDecimal> factoryRepairYears) {
+        this.factoryRepairYears = factoryRepairYears;
     }
 
     public BigDecimal getSectionRepairInterval() {
@@ -138,7 +138,7 @@ public class VehicleParameterDTO implements Serializable {
         sb.append(", load=").append(load);
         sb.append(", lifeSpan=").append(lifeSpan);
         sb.append(", cost=").append(cost);
-        sb.append(", factoryRepairInterval=").append(factoryRepairInterval);
+        sb.append(", factoryRepairYears=").append(factoryRepairYears);
         sb.append(", sectionRepairInterval=").append(sectionRepairInterval);
         sb.append(", factoryRepairCostList=").append(factoryRepairCostList);
         sb.append(", sectionRepairCostList=").append(sectionRepairCostList);

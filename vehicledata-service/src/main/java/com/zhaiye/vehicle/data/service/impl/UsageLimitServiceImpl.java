@@ -33,7 +33,7 @@ public class UsageLimitServiceImpl implements UsageLimitService {
         UsageLimitVO result = new UsageLimitVO();
         //编组辆数（辆）=向下取整[牵引质量/（自重+载重）]
         BigDecimal couches = extraParameterDTO.getTractiveWeight()
-                .divide(vehicleParameterDTO.getWeight().add(vehicleParameterDTO.getLoad()),RoundingMode.DOWN);
+                .divide(vehicleParameterDTO.getWeight().add(vehicleParameterDTO.getLoad()),0,RoundingMode.DOWN);
         //整列购置成本（万元）=购置成本*编组辆数
         BigDecimal totalPurchaseCost = vehicleParameterDTO.getCost().multiply(couches);
         List<UsageResultVO> usageResultVOList = new ArrayList<>();
@@ -92,31 +92,27 @@ public class UsageLimitServiceImpl implements UsageLimitService {
      * @param couches 编组辆数
      * @return 该年的维修成本
      */
-    private FixCostVO calculateFixCostByYear(BigDecimal year, VehicleParameterDTO vehicleParameterDTO, BigDecimal couches){
+    @Override
+    public FixCostVO calculateFixCostByYear(BigDecimal year, VehicleParameterDTO vehicleParameterDTO, BigDecimal couches){
         FixCostVO fixCostVO = new FixCostVO();
         fixCostVO.setYear(year);
         fixCostVO.setFixType(FixType.NONE);
         fixCostVO.setFixCost(new BigDecimal(0));
         //判断该年是否有厂修
-        BigDecimal factoryRepairInterval = vehicleParameterDTO.getFactoryRepairInterval();
-        if(year.compareTo(factoryRepairInterval)>=0) {
-            //年份大于厂修间隔才可能厂修
-            BigDecimal[] divideArray = year.divideAndRemainder(factoryRepairInterval);
-            if(divideArray[1].compareTo(new BigDecimal(0)) == 0){
-                //年份能整除，说明需要厂修
-                fixCostVO.setFixType(FixType.FACTORY_FIX);
-                //该年厂修成本为：第n次厂修成本*编组辆数
-                Integer fixTimes = divideArray[0].intValue();
-                fixCostVO.setFixTimes(fixTimes);
-                if(fixTimes >= vehicleParameterDTO.getFactoryRepairCostList().size()){
-                    fixTimes = vehicleParameterDTO.getFactoryRepairCostList().size();
-                }
-                BigDecimal fixCost =  vehicleParameterDTO.getFactoryRepairCostList()
-                        .get(fixTimes-1)
-                        .multiply(couches);
-                fixCostVO.setFixCost(fixCost);
-                return fixCostVO;
+        List<BigDecimal> factoryRepairYears = vehicleParameterDTO.getFactoryRepairYears();
+        Integer factoryRepairTimes = calculateFactoryFixTimes(year,factoryRepairYears);
+        if(factoryRepairTimes > 0) {
+            fixCostVO.setFixType(FixType.FACTORY_FIX);
+            //该年厂修成本为：第n次厂修成本*编组辆数
+            fixCostVO.setFixTimes(factoryRepairTimes);
+            if(factoryRepairTimes >= vehicleParameterDTO.getFactoryRepairCostList().size()){
+                factoryRepairTimes = vehicleParameterDTO.getFactoryRepairCostList().size();
             }
+            BigDecimal fixCost =  vehicleParameterDTO.getFactoryRepairCostList()
+                    .get(factoryRepairTimes-1)
+                    .multiply(couches);
+            fixCostVO.setFixCost(fixCost);
+            return fixCostVO;
         }
         //判断该年是否为段修
         BigDecimal sectionRepairInterval = vehicleParameterDTO.getSectionRepairInterval();
@@ -138,6 +134,23 @@ public class UsageLimitServiceImpl implements UsageLimitService {
             }
         }
         return fixCostVO;
+    }
+
+    /**
+     * 判断指定年份是第几次厂修。没有厂修则返回0
+     *
+     * @param year
+     * @param factoryRepairYears
+     * @return
+     */
+    private Integer calculateFactoryFixTimes(BigDecimal year,List<BigDecimal> factoryRepairYears) {
+        for(int i=0;i<factoryRepairYears.size();i++){
+            if(year.compareTo(factoryRepairYears.get(i)) == 0){
+                //该年为厂修年份
+                return i+1;
+            }
+        }
+        return 0;
     }
 
 }

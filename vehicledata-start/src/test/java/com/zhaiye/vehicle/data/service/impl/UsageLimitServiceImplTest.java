@@ -35,7 +35,7 @@ public class UsageLimitServiceImplTest extends TestBase {
         param.setLoad(new BigDecimal("61"));
         param.setLifeSpan(25);
         param.setCost(new BigDecimal("31.5"));
-        param.setFactoryRepairInterval(new BigDecimal("9"));
+        param.setFactoryRepairYears(Lists.newArrayList(new BigDecimal("9"),new BigDecimal("18")));
         param.setFactoryRepairCostList(Lists.newArrayList(new BigDecimal("5.54"),new BigDecimal("5.83")));
         param.setSectionRepairInterval(new BigDecimal("1.5"));
         param.setSectionRepairCostList(Lists.newArrayList(new BigDecimal("1.87"),new BigDecimal("2.08"),
