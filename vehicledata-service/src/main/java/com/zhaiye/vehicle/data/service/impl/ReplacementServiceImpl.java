@@ -47,12 +47,37 @@ public class ReplacementServiceImpl implements ReplacementService {
             ReplacementVO replacementB = calculateReplacementCommonParam(vehicleA, extraParam);
             List<ReplacementResultVO> replacementBResultList = calculateVehicleBResultList(replacementB, vehicleB);
             replacementA.setReplacementBResultList(replacementBResultList);
+            List<BigDecimal> differenceList = calculateDifference(replacementA);
+            replacementA.setDiffValueList(differenceList);
+            replacementA.setVehicleTypeA(vehicleA.getVehicleType());
+            replacementA.setVehicleTypeB(vehicleB.getVehicleType());
             return replacementA;
         }
         catch (Exception e){
             LOGGER.error("calculateReplacement异常,vehicleA:{},vehicleB:{}",vehicleA,vehicleB,e);
             return null;
         }
+    }
+
+    /**
+     * 计算替换车辆和被替换车辆每年的效益差值
+     *
+     * @param replacementVO
+     * @return
+     */
+    private List<BigDecimal> calculateDifference(ReplacementVO replacementVO){
+        List<ReplacementResultVO> replacementResultAList = replacementVO.getReplacementAResultList();
+        List<ReplacementResultVO> replacementResultBList = replacementVO.getReplacementBResultList();
+        List<BigDecimal> resultList = new ArrayList<>();
+        for(int i=0;i<replacementResultAList.size();i++){
+            ReplacementResultVO resultA = replacementResultAList.get(i);
+            ReplacementResultVO resultB = replacementResultBList.get(i);
+            BigDecimal result = resultB.getReplacementTotalIncome()
+                    .subtract(resultA.getRemainIncome())
+                    .subtract(resultA.getRemainDeprecationCost());
+            resultList.add(result);
+        }
+        return resultList;
     }
 
     /**
@@ -133,6 +158,7 @@ public class ReplacementServiceImpl implements ReplacementService {
             resultVO.setRemainFixCost(remainFixCost);
             resultVO.setRemainRevenue(remainRevenue);
             resultVO.setRemainIncome(remainIncome);
+            resultVO.setYear(year);
             resultList.add(resultVO);
         }
         return resultList;
@@ -164,6 +190,7 @@ public class ReplacementServiceImpl implements ReplacementService {
             //替换车型的总收益（万元）=年均收益*（被替换车型的最佳使用年限-X）
             BigDecimal replacementTotalIncome = avgIncome.multiply(replacementVO.getLimitYear().subtract(year));
             resultVO.setReplacementTotalIncome(replacementTotalIncome);
+            resultVO.setYear(year);
             resultList.add(resultVO);
         }
         return resultList;

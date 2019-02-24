@@ -14,6 +14,16 @@ public class ReplacementVO implements Serializable {
     private static final long serialVersionUID = -7710034456760246793L;
 
     /**
+     * 被替换车型
+     */
+    private String vehicleTypeA;
+
+    /**
+     * 替换车型
+     */
+    private String vehicleTypeB;
+
+    /**
      * 周转次数
      */
     private BigDecimal runCount;
@@ -67,6 +77,11 @@ public class ReplacementVO implements Serializable {
      * 在第X年替换时，替换车辆的收益计算结果列表
      */
     private List<ReplacementResultVO> replacementBResultList;
+
+    /**
+     * 每年的效益差值
+     */
+    private List<BigDecimal> diffValueList;
 
     public BigDecimal getRunCount() {
         return runCount;
@@ -156,10 +171,36 @@ public class ReplacementVO implements Serializable {
         this.totalFixCost = totalFixCost;
     }
 
+    public List<BigDecimal> getDiffValueList() {
+        return diffValueList;
+    }
+
+    public void setDiffValueList(List<BigDecimal> diffValueList) {
+        this.diffValueList = diffValueList;
+    }
+
+    public String getVehicleTypeA() {
+        return vehicleTypeA;
+    }
+
+    public void setVehicleTypeA(String vehicleTypeA) {
+        this.vehicleTypeA = vehicleTypeA;
+    }
+
+    public String getVehicleTypeB() {
+        return vehicleTypeB;
+    }
+
+    public void setVehicleTypeB(String vehicleTypeB) {
+        this.vehicleTypeB = vehicleTypeB;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ReplacementVO{");
-        sb.append("runCount=").append(runCount);
+        sb.append("vehicleTypeA='").append(vehicleTypeA).append('\'');
+        sb.append(", vehicleTypeB='").append(vehicleTypeB).append('\'');
+        sb.append(", runCount=").append(runCount);
         sb.append(", totalLoad=").append(totalLoad);
         sb.append(", totalWorkDistance=").append(totalWorkDistance);
         sb.append(", totalRevenue=").append(totalRevenue);
@@ -170,6 +211,7 @@ public class ReplacementVO implements Serializable {
         sb.append(", totalFixCost=").append(totalFixCost);
         sb.append(", replacementAResultList=").append(replacementAResultList);
         sb.append(", replacementBResultList=").append(replacementBResultList);
+        sb.append(", diffValueList=").append(diffValueList);
         sb.append('}');
         return sb.toString();
     }
