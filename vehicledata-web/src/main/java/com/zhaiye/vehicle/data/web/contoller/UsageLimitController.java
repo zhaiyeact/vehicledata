@@ -4,6 +4,7 @@ import com.zhaiye.vehicle.data.common.dto.ExtraParameterDTO;
 import com.zhaiye.vehicle.data.common.dto.VehicleParameterDTO;
 import com.zhaiye.vehicle.data.common.vo.UsageLimitVO;
 import com.zhaiye.vehicle.data.common.vo.UsageLimitWebResultVO;
+import com.zhaiye.vehicle.data.common.vo.UsageWebWrapperVO;
 import com.zhaiye.vehicle.data.common.vo.VehicleDataWebQueryVO;
 import com.zhaiye.vehicle.data.converter.ExtraParameterDTOConverter;
 import com.zhaiye.vehicle.data.converter.UsageLimitWebResultVOConverter;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -40,12 +42,15 @@ public class UsageLimitController {
      */
     @RequestMapping(value = "/UsageLimit/calculate",method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<UsageLimitWebResultVO> calculateUsageLimit(@RequestBody VehicleDataWebQueryVO query){
+    public UsageWebWrapperVO calculateUsageLimit(@RequestBody VehicleDataWebQueryVO query){
         try {
+            UsageWebWrapperVO result = new UsageWebWrapperVO();
             VehicleParameterDTO vehicleParam = VehicleParameterDTOConverter.convertFromVehicleDataQueryVO(query);
             ExtraParameterDTO extraParam = ExtraParameterDTOConverter.convertFromVehicleDataQuery(query);
             UsageLimitVO usageLimitVO = usageLimitService.calculateUsageLimit(vehicleParam,extraParam);
-            return UsageLimitWebResultVOConverter.convertFromUsageLimitVO(usageLimitVO);
+            result.setResultList(UsageLimitWebResultVOConverter.convertFromUsageLimitVO(usageLimitVO));
+            result.setLimitYear(usageLimitVO.getLimitYear().setScale(1,BigDecimal.ROUND_HALF_UP).toString());
+            return result;
         }
         catch (Exception e){
             LOGGER.error("calculateUsageLimit异常,query:{}",query,e);

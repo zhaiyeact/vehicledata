@@ -44,19 +44,39 @@ public class ReplacementServiceImpl implements ReplacementService {
             ReplacementVO replacementA = calculateReplacementCommonParam(vehicleA, extraParam);
             List<ReplacementResultVO> replacementAResultList = calculateVehicleAResultList(replacementA, vehicleA);
             replacementA.setReplacementAResultList(replacementAResultList);
-            ReplacementVO replacementB = calculateReplacementCommonParam(vehicleA, extraParam);
+            ReplacementVO replacementB = calculateReplacementCommonParam(vehicleB, extraParam);
             List<ReplacementResultVO> replacementBResultList = calculateVehicleBResultList(replacementB, vehicleB);
             replacementA.setReplacementBResultList(replacementBResultList);
             List<BigDecimal> differenceList = calculateDifference(replacementA);
             replacementA.setDiffValueList(differenceList);
             replacementA.setVehicleTypeA(vehicleA.getVehicleType());
             replacementA.setVehicleTypeB(vehicleB.getVehicleType());
+            replacementA.setBestYear(findBestYear(replacementBResultList,differenceList));
             return replacementA;
         }
         catch (Exception e){
             LOGGER.error("calculateReplacement异常,vehicleA:{},vehicleB:{}",vehicleA,vehicleB,e);
             return null;
         }
+    }
+
+    /**
+     * 计算最佳替换年限
+     *
+     * @param replacementBResultList 替换车型数据列表
+     * @param diffValueList 效益差值列表
+     * @return
+     */
+    private BigDecimal findBestYear(List<ReplacementResultVO> replacementBResultList,List<BigDecimal> diffValueList){
+       BigDecimal maxDiff = diffValueList.get(0);
+       Integer index = 0;
+       for(int i=0;i<diffValueList.size();i++){
+           if(maxDiff.compareTo(diffValueList.get(i)) < 0){
+               index = i;
+               maxDiff = diffValueList.get(i);
+           }
+       }
+       return replacementBResultList.get(index).getYear();
     }
 
     /**

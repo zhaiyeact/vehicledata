@@ -54,6 +54,11 @@ public class ReplacementVO implements Serializable {
     private BigDecimal limitYear;
 
     /**
+     * 最佳替换年限
+     */
+    private BigDecimal bestYear;
+
+    /**
      * 编组辆数
      */
     private BigDecimal couches;
@@ -195,6 +200,14 @@ public class ReplacementVO implements Serializable {
         this.vehicleTypeB = vehicleTypeB;
     }
 
+    public BigDecimal getBestYear() {
+        return bestYear;
+    }
+
+    public void setBestYear(BigDecimal bestYear) {
+        this.bestYear = bestYear;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ReplacementVO{");
@@ -206,6 +219,7 @@ public class ReplacementVO implements Serializable {
         sb.append(", totalRevenue=").append(totalRevenue);
         sb.append(", deprecationRate=").append(deprecationRate);
         sb.append(", limitYear=").append(limitYear);
+        sb.append(", bestYear=").append(bestYear);
         sb.append(", couches=").append(couches);
         sb.append(", totalPurchaseCost=").append(totalPurchaseCost);
         sb.append(", totalFixCost=").append(totalFixCost);
