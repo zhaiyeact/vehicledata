@@ -112,7 +112,7 @@ public class ReplacementServiceImpl implements ReplacementService {
         //周转次数=一年天数*（1-检备率）/周转时间
         BigDecimal runCount =new BigDecimal("1.00").subtract(vehicleParam.getCheckBackupRate())
                 .multiply(new BigDecimal(extraParam.getWorkDaysInYear()))
-                .divide(extraParam.getWorkTimeDuration(),8,BigDecimal.ROUND_HALF_UP);
+                .divide(extraParam.getWorkTimeDuration(),10,BigDecimal.ROUND_HALF_UP);
         //编组辆数（辆）=向下取整[牵引质量/（自重+载重）]
         BigDecimal couches = extraParam.getTractiveWeight()
                 .divide(vehicleParam.getWeight().add(vehicleParam.getLoad()),0,RoundingMode.DOWN);
@@ -127,7 +127,7 @@ public class ReplacementServiceImpl implements ReplacementService {
         UsageLimitVO usageLimitVO = usageLimitService.calculateUsageLimit(vehicleParam,extraParam);
         //折旧率=（1-残值率）/最佳使用年限
         BigDecimal deprecationRate = new BigDecimal("1.00").subtract(vehicleParam.getBadCaseRate())
-                .divide(usageLimitVO.getLimitYear(),4,BigDecimal.ROUND_HALF_UP);
+                .divide(usageLimitVO.getLimitYear(),10,BigDecimal.ROUND_HALF_UP);
         //整列购置成本（万元）=购置成本*编组辆数
         BigDecimal totalPurchaseCost = vehicleParam.getCost().multiply(couches);
         Integer limitYearFixCostIndex = usageLimitVO.getLimitYear().divide(new BigDecimal("0.5")).intValue()-1;
