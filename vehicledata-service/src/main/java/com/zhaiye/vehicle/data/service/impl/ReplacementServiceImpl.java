@@ -45,7 +45,7 @@ public class ReplacementServiceImpl implements ReplacementService {
             List<ReplacementResultVO> replacementAResultList = calculateVehicleAResultList(replacementA, vehicleA);
             replacementA.setReplacementAResultList(replacementAResultList);
             ReplacementVO replacementB = calculateReplacementCommonParam(vehicleB, extraParam);
-            List<ReplacementResultVO> replacementBResultList = calculateVehicleBResultList(replacementB, vehicleB);
+            List<ReplacementResultVO> replacementBResultList = calculateVehicleBResultList(replacementA, replacementB);
             replacementA.setReplacementBResultList(replacementBResultList);
             List<BigDecimal> differenceList = calculateDifference(replacementA);
             replacementA.setDiffValueList(differenceList);
@@ -187,28 +187,28 @@ public class ReplacementServiceImpl implements ReplacementService {
     /**
      * 计算替换车辆每年输出结果列表
      *
-     * @param replacementVO
-     * @param vehicleB
+     * @param replacementA 被替换车辆参数
+     * @param replacementB 替换车辆参数
      * @return
      */
-    private List<ReplacementResultVO> calculateVehicleBResultList(ReplacementVO replacementVO,VehicleDetailParameterDTO vehicleB) {
+    private List<ReplacementResultVO> calculateVehicleBResultList(ReplacementVO replacementA,ReplacementVO replacementB) {
         List<ReplacementResultVO> resultList = new ArrayList<>();
         //总折旧费（万元）=整列购置成本*折旧率*最佳使用年限
-        BigDecimal totalDeprecationCost = replacementVO.getTotalPurchaseCost()
-                .multiply(replacementVO.getDeprecationRate())
-                .multiply(replacementVO.getLimitYear());
+        BigDecimal totalDeprecationCost = replacementB.getTotalPurchaseCost()
+                .multiply(replacementB.getDeprecationRate())
+                .multiply(replacementB.getLimitYear());
         //总运输收入（万元）=整列运输收入*最佳使用年限
-        BigDecimal totalRevenue = replacementVO.getTotalRevenue().multiply(replacementVO.getLimitYear());
-        BigDecimal totalFixCost = replacementVO.getTotalFixCost();
+        BigDecimal totalRevenue = replacementB.getTotalRevenue().multiply(replacementB.getLimitYear());
+        BigDecimal totalFixCost = replacementB.getTotalFixCost();
         //年均收益（万元）=（总运输收入-总折旧费-总维修费）/最佳使用年限
         BigDecimal avgIncome =totalRevenue.subtract(totalDeprecationCost).subtract(totalFixCost)
-                .divide(replacementVO.getLimitYear(),2,BigDecimal.ROUND_HALF_UP);
+                .divide(replacementB.getLimitYear(),2,BigDecimal.ROUND_HALF_UP);
         for(BigDecimal year=new BigDecimal("0.5");
-            year.compareTo(replacementVO.getLimitYear())<=0;
+            year.compareTo(replacementB.getLimitYear())<=0;
             year = year.add(new BigDecimal("0.5"))){
             ReplacementResultVO resultVO = new ReplacementResultVO();
             //替换车型的总收益（万元）=年均收益*（被替换车型的最佳使用年限-X）
-            BigDecimal replacementTotalIncome = avgIncome.multiply(replacementVO.getLimitYear().subtract(year));
+            BigDecimal replacementTotalIncome = avgIncome.multiply(replacementA.getLimitYear().subtract(year));
             resultVO.setReplacementTotalIncome(replacementTotalIncome);
             resultVO.setYear(year);
             resultList.add(resultVO);
